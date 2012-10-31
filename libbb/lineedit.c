@@ -1407,8 +1407,7 @@ void save_history(line_input_t *st)
 
 	fp = fopen(st->hist_file, "a");
 	if (fp) {
-		int fd;
-		unsigned i;
+		int i, fd;
 		char *new_name;
 		line_input_t *st_temp;
 
@@ -2528,9 +2527,9 @@ int FAST_FUNC read_line_input(line_input_t *st, const char *prompt, char *comman
 					/* Delete word forward */
 					int nc, sc = cursor;
 					ctrl_right();
-					nc = cursor;
-					input_backward(cursor - sc);
-					while (--nc >= cursor)
+					nc = cursor - sc;
+					input_backward(nc);
+					while (--nc >= 0)
 						input_delete(1);
 					break;
 				}
@@ -2730,7 +2729,8 @@ int FAST_FUNC read_line_input(const char* prompt, char* command, int maxsize)
 {
 	fputs(prompt, stdout);
 	fflush_all();
-	fgets(command, maxsize, stdin);
+	if (!fgets(command, maxsize, stdin))
+		return -1;
 	return strlen(command);
 }
 

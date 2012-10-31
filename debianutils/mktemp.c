@@ -38,7 +38,7 @@
 //usage:       "TEMPLATE must end with XXXXXX (e.g. [/dir/]nameXXXXXX).\n"
 //usage:       "Without TEMPLATE, -t tmp.XXXXXX is assumed.\n"
 //usage:     "\n	-d	Make directory, not file"
-////usage:   "\n	-q	Fail silently on errors" - we ignore this opt
+//usage:     "\n	-q	Fail silently on errors"
 //usage:     "\n	-t	Prepend base directory name to TEMPLATE"
 //usage:     "\n	-p DIR	Use DIR as a base directory (implies -t)"
 //usage:     "\n	-u	Do not create anything; print a name"
@@ -71,7 +71,6 @@ int mktemp_main(int argc UNUSED_PARAM, char **argv)
 	if (!path || path[0] == '\0')
 		path = "/tmp";
 
-	/* -q is ignored */
 	opt_complementary = "?1"; /* 1 argument max */
 	opts = getopt32(argv, "dqtp:u", &path);
 
@@ -102,14 +101,23 @@ int mktemp_main(int argc UNUSED_PARAM, char **argv)
 	if (opts & (OPT_t|OPT_p))
 		chp = concat_path_file(path, chp);
 
-	if (opts & OPT_d) {
+	if (opts & OPT_u) {
+		chp = mktemp(chp);
+		if (chp[0] == '\0')
+			goto error;
+	} else if (opts & OPT_d) {
 		if (mkdtemp(chp) == NULL)
-			return EXIT_FAILURE;
+			goto error;
 	} else {
 		if (mkstemp(chp) < 0)
-			return EXIT_FAILURE;
+			goto error;
 	}
  ret:
 	puts(chp);
 	return EXIT_SUCCESS;
+ error:
+	if (opts & OPT_q)
+		return EXIT_FAILURE;
+	/* don't use chp as it gets mangled in case of error */
+	bb_perror_nomsg_and_die();
 }

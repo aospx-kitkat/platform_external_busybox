@@ -130,10 +130,11 @@ static void xfreopen_write(const char *file, FILE *f)
 }
 
 //usage:#if !ENABLE_MODPROBE_SMALL
-//usage:#define depmod_trivial_usage "[-n] [MODFILES]..."
+//usage:#define depmod_trivial_usage "[-n] [-b BASE] [VERSION] [MODFILES]..."
 //usage:#define depmod_full_usage "\n\n"
 //usage:       "Generate modules.dep, alias, and symbols files"
 //usage:     "\n"
+//usage:     "\n	-b BASE	Use BASE/lib/modules/VERSION"
 //usage:     "\n	-n	Dry run: print files to stdout"
 //usage:#endif
 
