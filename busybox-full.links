@@ -87,7 +87,6 @@
 /bin/ls
 /bin/lsattr
 /sbin/lsmod
-/bin/lsof
 /bin/lsusb
 /bin/lzcat
 /bin/lzma
