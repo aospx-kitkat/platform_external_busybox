@@ -253,7 +253,7 @@ enum {
 #define OPTION_PARAM &opt_m, &(G.logFile.path), &opt_l \
 	IF_FEATURE_ROTATE_LOGFILE(,&opt_s) \
 	IF_FEATURE_ROTATE_LOGFILE(,&opt_b) \
-	IF_FEATURE_REMOTE_LOG(	  ,&remoteAddrList) \
+	IF_FEATURE_REMOTE_LOG(    ,&remoteAddrList) \
 	IF_FEATURE_IPC_SYSLOG(    ,&opt_C) \
 	IF_FEATURE_SYSLOGD_CFG(   ,&opt_f)
 
@@ -429,7 +429,9 @@ static void parse_syslogdcfg(const char *file)
 	return;
 
  cfgerr:
-	bb_error_msg_and_die("error in '%s' at line %d", file, parser->lineno);
+	bb_error_msg_and_die("error in '%s' at line %d",
+			file ? file : "/etc/syslog.conf",
+			parser->lineno);
 }
 #endif
 
@@ -529,8 +531,8 @@ static void log_to_shmem(const char *msg)
 		printf("tail:%d\n", G.shbuf->tail);
 }
 #else
-void ipcsyslog_cleanup(void);
-void ipcsyslog_init(void);
+static void ipcsyslog_cleanup(void) {}
+static void ipcsyslog_init(void) {}
 void log_to_shmem(const char *msg);
 #endif /* FEATURE_IPC_SYSLOG */
 
@@ -567,9 +569,9 @@ static void log_to_kmsg(int pri, const char *msg)
 	write(G.kmsgfd, G.printbuf, sprintf(G.printbuf, "<%d>%s\n", pri, msg));
 }
 #else
-void kmsg_init(void);
-void kmsg_cleanup(void);
-void log_to_kmsg(int pri, const char *msg);
+static void kmsg_init(void) {}
+static void kmsg_cleanup(void) {}
+static void log_to_kmsg(int pri UNUSED_PARAM, const char *msg UNUSED_PARAM) {}
 #endif /* FEATURE_KMSG_SYSLOG */
 
 /* Print a message to the log file. */
@@ -706,7 +708,7 @@ static void timestamp_and_log(int pri, char *msg, int len)
 	}
 	timestamp[15] = '\0';
 
-	if (ENABLE_FEATURE_KMSG_SYSLOG && (option_mask32 & OPT_kmsg)) {
+	if (option_mask32 & OPT_kmsg) {
 		log_to_kmsg(pri, msg);
 		return;
 	}
@@ -881,11 +883,10 @@ static void do_syslogd(void)
 #endif
 	sock_fd = create_socket();
 
-	if (ENABLE_FEATURE_IPC_SYSLOG && (option_mask32 & OPT_circularlog)) {
+	if (option_mask32 & OPT_circularlog)
 		ipcsyslog_init();
-	}
 
-	if (ENABLE_FEATURE_KMSG_SYSLOG && (option_mask32 & OPT_kmsg))
+	if (option_mask32 & OPT_kmsg)
 		kmsg_init();
 
 	timestamp_and_log_internal("syslogd started: BusyBox v" BB_VER);
@@ -974,9 +975,8 @@ static void do_syslogd(void)
 	timestamp_and_log_internal("syslogd exiting");
 	puts("syslogd exiting");
 	remove_pidfile(CONFIG_PID_FILE_PATH "/syslogd.pid");
-	if (ENABLE_FEATURE_IPC_SYSLOG)
-		ipcsyslog_cleanup();
-	if (ENABLE_FEATURE_KMSG_SYSLOG && (option_mask32 & OPT_kmsg))
+	ipcsyslog_cleanup();
+	if (option_mask32 & OPT_kmsg)
 		kmsg_cleanup();
 	kill_myself_with_sig(bb_got_signal);
 #undef recvbuf

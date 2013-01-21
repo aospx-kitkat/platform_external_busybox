@@ -14,7 +14,7 @@
  *	add :help command
  *	:map macros
  *	if mark[] values were line numbers rather than pointers
- *	   it would be easier to change the mark when add/delete lines
+ *      it would be easier to change the mark when add/delete lines
  *	More intelligence in refresh()
  *	":r !cmd"  and  "!cmd"  to filter text through an external command
  *	A true "undo" facility
@@ -1931,11 +1931,11 @@ static int find_range(char **start, char **stop, char c)
 		dot_end();		// find NL
 		q = dot;
 	} else {
-	    // nothing -- this causes any other values of c to
-	    // represent the one-character range under the
-	    // cursor.  this is correct for ' ' and 'l', but
-	    // perhaps no others.
-	    //
+		// nothing -- this causes any other values of c to
+		// represent the one-character range under the
+		// cursor.  this is correct for ' ' and 'l', but
+		// perhaps no others.
+		//
 	}
 	if (q < p) {
 		t = q;
