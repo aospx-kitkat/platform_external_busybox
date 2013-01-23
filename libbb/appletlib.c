@@ -630,7 +630,8 @@ static int busybox_main(char **argv)
 		full_write2_str(
 			"BusyBox is copyrighted by many authors between 1998-2012.\n"
 			"Licensed under GPLv2. See source distribution for detailed\n"
-			"copyright notices. Merged for bionic by tpruvot@github\n"
+			"copyright notices. Merged for bionic by tpruvot@github and pbeeler@github\n"
+			"Android bionic Port also maintained by CyanogenMod and SaberMod Teams\n"
 			"\n"
 			"Usage: busybox [function [arguments]...]\n"
 			"   or: busybox --list"IF_FEATURE_INSTALLER("[-full]")"\n"
