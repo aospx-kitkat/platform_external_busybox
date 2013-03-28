@@ -1385,6 +1385,7 @@ int inetd_main(int argc UNUSED_PARAM, char **argv)
 				int r;
 
 				close(new_udp_fd);
+				dbg("closed new_udp_fd:%d\n", new_udp_fd);
 				lsa = xzalloc_lsa(sep->se_family);
 				/* peek at the packet and remember peer addr */
 				r = recvfrom(ctrl, NULL, 0, MSG_PEEK|MSG_DONTWAIT,

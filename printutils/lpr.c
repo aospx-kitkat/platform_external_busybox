@@ -245,7 +245,7 @@ int lpqr_main(int argc UNUSED_PARAM, char *argv[])
 		// send data file, with name "dfaXXX"
 		if (opts & LPR_V)
 			bb_error_msg("sending data file");
-		fdprintf(fd, "\x3" "%"FILESIZE_FMT"u d%s\n", st.st_size, remote_filename);
+		fdprintf(fd, "\x3" "%"OFF_FMT"u d%s\n", st.st_size, remote_filename);
 		get_response_or_say_and_die(fd, "sending data file");
 		if (bb_copyfd_size(dfd, fd, st.st_size) != st.st_size) {
 			// We're screwed. We sent less bytes than we advertised.

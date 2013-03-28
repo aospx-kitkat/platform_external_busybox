@@ -2085,7 +2085,7 @@ static uintptr_t text_hole_make(char *p, int size)	// at "p", make a 'size' byte
 		p           += bias;
 #if ENABLE_FEATURE_VI_YANKMARK
 		{
-			unsigned i;
+			int i;
 			for (i = 0; i < ARRAY_SIZE(mark); i++)
 				if (mark[i])
 					mark[i] += bias;

@@ -52,6 +52,7 @@
 #include <linux/timex.h>
 extern int adjtimex (struct timex *);
 #else
+#include <sys/resource.h> /* setpriority */
 #include <sys/timex.h>
 #endif
 #ifndef IPTOS_LOWDELAY

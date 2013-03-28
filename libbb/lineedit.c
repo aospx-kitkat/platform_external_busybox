@@ -1407,8 +1407,7 @@ void save_history(line_input_t *st)
 
 	fp = fopen(st->hist_file, "a");
 	if (fp) {
-		int fd;
-		unsigned i;
+		int i, fd;
 		char *new_name;
 		line_input_t *st_temp;
 

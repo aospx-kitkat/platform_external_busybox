@@ -1800,7 +1800,8 @@ extern const char bb_default_login_shell[] ALIGN1;
 # define DEFAULT_SHELL_SHORT_NAME     (bb_default_login_shell+13)
 
 #else
-# define LIBBB_DEFAULT_LOGIN_SHELL      "-/bin/sh"
+#define LIBBB_DEFAULT_LOGIN_SHELL  "-/bin/sh"
+
 /* "/bin/sh" */
 # define DEFAULT_SHELL              (bb_default_login_shell+1)
 /* "sh" */

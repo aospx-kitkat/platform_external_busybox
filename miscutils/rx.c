@@ -109,7 +109,7 @@ static int receive(/*int read_fd, */int file_fd)
 		}
 		/* Write previously received block */
 		errno = 0;
-		if ((unsigned) full_write(file_fd, blockBuf, blockLength) != blockLength) {
+		if (full_write(file_fd, blockBuf, blockLength) != blockLength) {
 			bb_perror_msg(bb_msg_write_error);
 			goto fatal;
 		}
@@ -165,7 +165,7 @@ static int receive(/*int read_fd, */int file_fd)
 		if (blockNo == (int) ((wantBlockNo - 1) & 0xff)) {
 			/* a repeat of the last block is ok, just ignore it. */
 			/* this also ignores the initial block 0 which is */
-			/* meta data. nt)*/
+			/* meta data. */
 			blockLength = 0;
 			goto next;
 		}
