@@ -1132,9 +1132,6 @@ void bb_displayroutes(int noresolve, int netstatfmt) FAST_FUNC;
 
 
 /* Networking */
-int create_icmp_socket(void) FAST_FUNC;
-int create_icmp6_socket(void) FAST_FUNC;
-/* interface.c */
 /* This structure defines protocol families and their handlers. */
 struct aftype {
 	const char *name;
@@ -1849,7 +1846,7 @@ extern const char bb_default_login_shell[] ALIGN1;
 # define VC_4 "/dev/tty3"
 # define VC_5 "/dev/tty4"
 # define VC_FORMAT "/dev/tty%d"
-# define LOOP_FORMAT "/dev/loop%d"
+# define LOOP_FORMAT "/dev/loop%u"
 # define LOOP_NAMESIZE (sizeof("/dev/loop") + sizeof(int)*3 + 1)
 # define LOOP_NAME "/dev/loop"
 # define FB_0 "/dev/fb0"
