@@ -45,8 +45,11 @@ void FAST_FUNC reinit_unicode(const char *LANG)
 
 void FAST_FUNC init_unicode(VOID)
 {
-	if (unicode_status == UNICODE_UNKNOWN)
-		reinit_unicode(getenv("LANG"));
+	if (unicode_status == UNICODE_UNKNOWN) {
+		char *s = getenv("LC_ALL");
+		if (!s) s = getenv("LANG");
+		reinit_unicode(s);
+	}
 }
 
 #else
@@ -64,8 +67,11 @@ void FAST_FUNC reinit_unicode(const char *LANG)
 
 void FAST_FUNC init_unicode(VOID)
 {
-	if (unicode_status == UNICODE_UNKNOWN)
-		reinit_unicode(getenv("LANG"));
+	if (unicode_status == UNICODE_UNKNOWN) {
+		char *s = getenv("LC_ALL");
+		if (!s) s = getenv("LANG");
+		reinit_unicode(s);
+	}
 }
 # endif
 
