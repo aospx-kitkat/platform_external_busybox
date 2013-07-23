@@ -11,6 +11,8 @@
 /* BB_AUDIT GNU compatible -c, -q, and -v options in 'fancy' configuration. */
 /* http://www.opengroup.org/onlinepubs/007904975/utilities/head.html */
 
+//kbuild:lib-$(CONFIG_HEAD) += head.o
+
 //usage:#define head_trivial_usage
 //usage:       "[OPTIONS] [FILE]..."
 //usage:#define head_full_usage "\n\n"
@@ -33,6 +35,110 @@
 #include "libbb.h"
 
 /* This is a NOEXEC applet. Be very careful! */
+
+#if !ENABLE_FEATURE_FANCY_HEAD
+# define print_first_N(fp,count,bytes) print_first_N(fp,count)
+#endif
+static void
+print_first_N(FILE *fp, unsigned long count, bool count_bytes)
+{
+#if !ENABLE_FEATURE_FANCY_HEAD
+	const int count_bytes = 0;
+#endif
+	while (count) {
+		int c = getc(fp);
+		if (c == EOF)
+			break;
+		if (count_bytes || (c == '\n'))
+			--count;
+		putchar(c);
+	}
+}
+
+#if ENABLE_FEATURE_FANCY_HEAD
+static void
+print_except_N_last_bytes(FILE *fp, unsigned count)
+{
+	unsigned char *circle = xmalloc(++count);
+	unsigned head = 0;
+	for(;;) {
+		int c;
+		c = getc(fp);
+		if (c == EOF)
+			goto ret;
+		circle[head++] = c;
+		if (head == count)
+			break;
+	}
+	for (;;) {
+		int c;
+		if (head == count)
+			head = 0;
+		putchar(circle[head]);
+		c = getc(fp);
+		if (c == EOF)
+			goto ret;
+		circle[head] = c;
+		head++;
+	}
+ ret:
+	free(circle);
+}
+
+static void
+print_except_N_last_lines(FILE *fp, unsigned count)
+{
+	char **circle = xzalloc((++count) * sizeof(circle[0]));
+	unsigned head = 0;
+	for(;;) {
+		char *c;
+		c = xmalloc_fgets(fp);
+		if (!c)
+			goto ret;
+		circle[head++] = c;
+		if (head == count)
+			break;
+	}
+	for (;;) {
+		char *c;
+		if (head == count)
+			head = 0;
+		fputs(circle[head], stdout);
+		c = xmalloc_fgets(fp);
+		if (!c)
+			goto ret;
+		free(circle[head]);
+		circle[head++] = c;
+	}
+ ret:
+	head = 0;
+	for(;;) {
+		free(circle[head++]);
+		if (head == count)
+			break;
+	}
+	free(circle);
+}
+#else
+/* Must never be called */
+void print_except_N_last_bytes(FILE *fp, unsigned count);
+void print_except_N_last_lines(FILE *fp, unsigned count);
+#endif
+
+#if !ENABLE_FEATURE_FANCY_HEAD
+# define eat_num(negative_N,p) eat_num(p)
+#endif
+static unsigned long
+eat_num(bool *negative_N, const char *p)
+{
+#if ENABLE_FEATURE_FANCY_HEAD
+	if (*p == '-') {
+		*negative_N = 1;
+		p++;
+	}
+#endif
+	return xatoul_sfx(p, bkm_suffixes);
+}
 
 static const char head_opts[] ALIGN1 =
 	"n:"
