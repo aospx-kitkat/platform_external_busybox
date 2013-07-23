@@ -325,6 +325,23 @@ static void clean_up_cur_rule(void)
 	make_default_cur_rule();
 }
 
+/* In later versions, endofname is in libbb */
+#define endofname mdev_endofname
+static
+const char* FAST_FUNC
+endofname(const char *name)
+{
+#define is_name(c)      ((c) == '_' || isalpha((unsigned char)(c)))
+#define is_in_name(c)   ((c) == '_' || isalnum((unsigned char)(c)))
+	if (!is_name(*name))
+		return name;
+	while (*++name) {
+		if (!is_in_name(*name))
+			break;
+	}
+	return name;
+}
+
 static char *parse_envmatch_pfx(char *val)
 {
 	struct envmatch **nextp = &G.cur_rule.envmatch;
